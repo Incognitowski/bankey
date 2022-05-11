@@ -1,3 +1,5 @@
+val exposedVersion: String by project
+
 plugins {
     application
     kotlin("jvm")

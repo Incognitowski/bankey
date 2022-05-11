@@ -1,7 +1,8 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 val kotlinVersion: String by project
-val exposedVersion: String by project
+val koinVersion : String by project
+val ktormVersion : String by project
 
 plugins {
     kotlin("jvm") version "1.6.20"
@@ -11,15 +12,28 @@ group = "io.learn"
 version = "1.0-SNAPSHOT"
 
 repositories {
+    mavenLocal()
     mavenCentral()
+}
+
+subprojects {
+    afterEvaluate {
+        dependencies {
+
+            implementation("com.h2database:h2:2.0.206")
+
+            implementation("org.ktorm:ktorm-core:${ktormVersion}")
+
+            implementation("io.insert-koin:koin-core:$koinVersion")
+
+            // Testing
+            testImplementation("io.insert-koin:koin-test:$koinVersion")
+        }
+    }
 }
 
 dependencies {
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlinVersion")
-
-    implementation("org.jetbrains.exposed:exposed-core:$exposedVersion")
-    implementation("org.jetbrains.exposed:exposed-dao:$exposedVersion")
-    implementation("org.jetbrains.exposed:exposed-jdbc:$exposedVersion")
 
     testImplementation(kotlin("test"))
 }
