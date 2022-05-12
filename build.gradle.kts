@@ -23,7 +23,18 @@ repositories {
 
 subprojects {
     afterEvaluate {
+        java {
+            sourceCompatibility = JavaVersion.VERSION_17
+            targetCompatibility = JavaVersion.VERSION_17
+        }
+
+        repositories {
+            mavenLocal()
+            mavenCentral()
+        }
+
         dependencies {
+            implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlinVersion")
 
             // Config
             implementation("com.sksamuel.hoplite:hoplite-core:$hopliteVersion")
@@ -42,6 +53,8 @@ subprojects {
             implementation("io.insert-koin:koin-core:$koinVersion")
 
             /////// TEST DEPENDENCIES ///////
+            testImplementation(kotlin("test"))
+
             testImplementation("io.insert-koin:koin-test:$koinVersion")
         }
 
@@ -57,7 +70,8 @@ subprojects {
 
 dependencies {
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlinVersion")
-
-    testImplementation(kotlin("test"))
 }
 
+tasks.withType<KotlinCompile> {
+    kotlinOptions.jvmTarget = "17"
+}
