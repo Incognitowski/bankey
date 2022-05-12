@@ -7,6 +7,7 @@ val hikariCPVersion : String by project
 val h2DatabaseVersion : String by project
 val flywayVersion : String by project
 val pgsqlConnectionVersion : String by project
+val hopliteVersion : String by project
 
 plugins {
     kotlin("jvm") version "1.6.20"
@@ -23,18 +24,33 @@ repositories {
 subprojects {
     afterEvaluate {
         dependencies {
+
+            // Config
+            implementation("com.sksamuel.hoplite:hoplite-core:$hopliteVersion")
+            implementation("com.sksamuel.hoplite:hoplite-json:$hopliteVersion")
+
+            // Database
             implementation("com.zaxxer:HikariCP:$hikariCPVersion")
             implementation("org.ktorm:ktorm-core:$ktormVersion")
             implementation("org.ktorm:ktorm-support-postgresql:$ktormVersion")
             implementation("com.zaxxer:HikariCP:$hikariCPVersion")
-            implementation("org.postgresql:postgresql:$pgsqlConnectionVersion")
             implementation("org.flywaydb:flyway-core:$flywayVersion")
+            implementation("org.postgresql:postgresql:$pgsqlConnectionVersion")
+            implementation("com.h2database:h2:$h2DatabaseVersion")
 
+            // Koin
             implementation("io.insert-koin:koin-core:$koinVersion")
 
-            // Testing
-            testImplementation("com.h2database:h2:$h2DatabaseVersion")
+            /////// TEST DEPENDENCIES ///////
             testImplementation("io.insert-koin:koin-test:$koinVersion")
+        }
+
+        tasks.test {
+            useJUnitPlatform()
+        }
+
+        tasks.withType<KotlinCompile> {
+            kotlinOptions.jvmTarget = "17"
         }
     }
 }
@@ -45,10 +61,3 @@ dependencies {
     testImplementation(kotlin("test"))
 }
 
-tasks.test {
-    useJUnitPlatform()
-}
-
-tasks.withType<KotlinCompile> {
-    kotlinOptions.jvmTarget = "1.8"
-}

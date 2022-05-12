@@ -1,0 +1,11 @@
+{
+  "port": 0,
+  "database": {
+    "provider": "H2|PGSQL",
+    "host": "",
+    "port": 0,
+    "name": "",
+    "user": "",
+    "password": ""
+  }
+}
