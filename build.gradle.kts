@@ -11,6 +11,7 @@ val hopliteVersion : String by project
 
 plugins {
     kotlin("jvm") version "1.6.20"
+    id("org.jetbrains.kotlinx.kover") version "0.5.0"
 }
 
 group = "io.learn"
@@ -24,8 +25,8 @@ repositories {
 subprojects {
     afterEvaluate {
         java {
-            sourceCompatibility = JavaVersion.VERSION_17
-            targetCompatibility = JavaVersion.VERSION_17
+            sourceCompatibility = JavaVersion.VERSION_11
+            targetCompatibility = JavaVersion.VERSION_11
         }
 
         repositories {
@@ -35,6 +36,8 @@ subprojects {
 
         dependencies {
             implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlinVersion")
+
+            implementation("ch.qos.logback:logback-classic:1.2.11")
 
             // Config
             implementation("com.sksamuel.hoplite:hoplite-core:$hopliteVersion")
@@ -53,7 +56,7 @@ subprojects {
             implementation("io.insert-koin:koin-core:$koinVersion")
 
             /////// TEST DEPENDENCIES ///////
-            testImplementation(kotlin("test"))
+            implementation("org.junit.jupiter:junit-jupiter:5.8.2")
 
             testImplementation("io.insert-koin:koin-test:$koinVersion")
         }
@@ -63,7 +66,7 @@ subprojects {
         }
 
         tasks.withType<KotlinCompile> {
-            kotlinOptions.jvmTarget = "17"
+            kotlinOptions.jvmTarget = "11"
         }
     }
 }
@@ -73,5 +76,5 @@ dependencies {
 }
 
 tasks.withType<KotlinCompile> {
-    kotlinOptions.jvmTarget = "17"
+    kotlinOptions.jvmTarget = "11"
 }
