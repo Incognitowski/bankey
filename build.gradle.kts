@@ -11,7 +11,7 @@ val hopliteVersion : String by project
 
 plugins {
     kotlin("jvm") version "1.6.20"
-    id("org.jetbrains.kotlinx.kover") version "0.5.0"
+    id("org.jetbrains.kotlinx.kover") version "0.5.1"
 }
 
 group = "io.learn"
@@ -59,6 +59,7 @@ subprojects {
             implementation("org.junit.jupiter:junit-jupiter:5.8.2")
 
             testImplementation("io.insert-koin:koin-test:$koinVersion")
+            testImplementation("io.insert-koin:koin-test-junit5:$koinVersion")
         }
 
         tasks.test {
