@@ -1,7 +1,7 @@
 import framework.databaseDependencyModule
 import org.koin.core.context.startKoin
 import org.ktorm.database.Database
-import parameters.parameterDependencyModule
+import parameter.parameterDependencyModule
 
 object DependencyContainer {
 
