@@ -1,4 +1,4 @@
-package parameters
+package parameter
 
 import org.ktorm.database.Database
 import org.ktorm.dsl.*
