@@ -14,6 +14,14 @@ object DatabaseProvider {
         H2
     }
 
+    private fun parseDatabaseProvider(aDatabaseProvider: String) : DatabaseProvider {
+        return try {
+            DatabaseProvider.valueOf(aDatabaseProvider)
+        } catch (e: Exception) {
+            throw DatabaseConfigurationException("Invalid database provider: '${aDatabaseProvider}'. Use one of: ${DatabaseProvider.values()}")
+        }
+    }
+
     private fun migrate(aDatabaseProvider: DatabaseProvider, aDataSource: DataSource) {
         when (aDatabaseProvider) {
             DatabaseProvider.PGSQL -> {
@@ -33,7 +41,7 @@ object DatabaseProvider {
         }
     }
 
-    private fun getDataSource(aDatabaseProvider: DatabaseProvider, aDatabaseConfigurationDTO: DatabaseConfigurationDTO) : DataSource {
+    private fun getDataSource(aDatabaseProvider: DatabaseProvider, aDatabaseConfigurationDTO: DatabaseConfigurationDTO): DataSource {
         return when (aDatabaseProvider) {
             DatabaseProvider.PGSQL -> {
                 HikariDataSource(
@@ -67,17 +75,27 @@ object DatabaseProvider {
     }
 
     fun getDatabaseConnectionAndMigrate(aDatabaseConfigurationDTO: DatabaseConfigurationDTO): Database {
-        val lDatabaseProvider = try {
-            DatabaseProvider.valueOf(aDatabaseConfigurationDTO.provider)
-        } catch (e: Exception) {
-            throw DatabaseConfigurationException("Invalid database provider: '${aDatabaseConfigurationDTO.provider}'. Use one of: ${DatabaseProvider.values()}")
-        }
+        val lDatabaseProvider = parseDatabaseProvider(aDatabaseConfigurationDTO.provider)
         val lDataSource = getDataSource(lDatabaseProvider, aDatabaseConfigurationDTO)
         migrate(lDatabaseProvider, lDataSource)
         return when (lDatabaseProvider) {
             DatabaseProvider.PGSQL -> Database.connect(dataSource = lDataSource, dialect = PostgreSqlDialect())
             DatabaseProvider.H2 -> Database.connect(dataSource = lDataSource)
         }
+    }
+
+    fun getDatabaseConnection(aDatabaseConfigurationDTO: DatabaseConfigurationDTO): Database {
+        val lDatabaseProvider = parseDatabaseProvider(aDatabaseConfigurationDTO.provider)
+        val lDataSource = getDataSource(lDatabaseProvider, aDatabaseConfigurationDTO)
+        return when (lDatabaseProvider) {
+            DatabaseProvider.PGSQL -> Database.connect(dataSource = lDataSource, dialect = PostgreSqlDialect())
+            DatabaseProvider.H2 -> Database.connect(dataSource = lDataSource)
+        }
+    }
+
+    fun getDatabaseDataSource(aDatabaseConfigurationDTO: DatabaseConfigurationDTO): DataSource {
+        val lDatabaseProvider = parseDatabaseProvider(aDatabaseConfigurationDTO.provider)
+        return getDataSource(lDatabaseProvider, aDatabaseConfigurationDTO)
     }
 
 }
