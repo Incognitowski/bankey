@@ -1,4 +1,4 @@
-package parameters
+package parameter
 
 import org.ktorm.dsl.QueryRowSet
 import org.ktorm.schema.BaseTable

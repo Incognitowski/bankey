@@ -1,4 +1,4 @@
-package parameters
+package parameter
 
 class ParameterAPI(private val mParameterRepository: ParameterRepository) {
 

@@ -1,4 +1,4 @@
-package parameters
+package parameter
 
 data class ParameterEntity(
     var parameterId: Long = 0,
