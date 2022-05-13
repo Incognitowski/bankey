@@ -1,1 +1,3 @@
-fun main() = Server().start()
+fun main()  {
+    Server().start()
+}
