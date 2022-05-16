@@ -5,6 +5,7 @@ import io.javalin.Javalin
 import io.javalin.apibuilder.ApiBuilder.*
 import org.ktorm.database.Database
 import parameter.ParameterController
+import parameter.ParameterListeners
 
 class Server {
 
@@ -19,15 +20,21 @@ class Server {
         DependencyContainer.bootstrap(
             aDatabase = lDatabase
         )
-        Javalin.create {
+        val lApp = Javalin.create {
             it.defaultContentType = "application/json"
             it.enableCorsForAllOrigins()
         }.routes {
             path("parameter") {
                 get(ParameterController::getOrCreate)
-                sse("aaa", ParameterController::listenToParameterChanges)
+                put("{parameterId}", ParameterController::update)
+                sse("listen", ParameterController::listenToParameterChanges)
+            }
+        }.events {
+            it.serverStopping {
+                ParameterListeners.clearListeners()
             }
         }.start(lConfig.port)
+        Runtime.getRuntime().addShutdownHook(Thread { lApp.stop() })
     }
 
 }
