@@ -13,13 +13,24 @@ class ParameterRepository(private val mDatabase: Database) {
             .lastOrNull()
     }
 
+    fun findById(aParameterId: Long): ParameterEntity? {
+        return mDatabase
+            .from(ParameterTable)
+            .select()
+            .where {
+                (ParameterTable.parameterId eq aParameterId)
+            }
+            .map { ParameterTable.createEntity(it) }
+            .lastOrNull()
+    }
+
     fun create(aParameterEntity: ParameterEntity) {
         aParameterEntity.parameterId = mDatabase.insertAndGenerateKey(ParameterTable) {
             set(it.processOperations, aParameterEntity.processOperations)
         } as Long
     }
 
-    fun update(aParameterEntity : ParameterEntity) {
+    fun update(aParameterEntity: ParameterEntity) {
         mDatabase.update(ParameterTable) {
             set(it.processOperations, aParameterEntity.processOperations)
             where { it.parameterId eq aParameterEntity.parameterId }
