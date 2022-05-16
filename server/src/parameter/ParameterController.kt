@@ -1,11 +1,9 @@
 package parameter
 
-import framework.coroutineOnAThread
 import framework.injectFromKoin
+import framework.runInTransaction
 import io.javalin.http.Context
 import io.javalin.http.sse.SseClient
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.runBlocking
 
 object ParameterController {
 
@@ -17,21 +15,27 @@ object ParameterController {
         ctx.json(lParameterEntity)
     }
 
-    fun listenToParameterChanges(sse: SseClient) {
-        val lShouldRespond = true
-        coroutineOnAThread {
-            while (true) {
-                delay(5_000)
-                val lParameterEntity = mParameterAPI.findLatest()!!
-                lParameterEntity.processOperations = !lParameterEntity.processOperations
-                mParameterAPI.update(lParameterEntity)
-            }
+    fun update(ctx: Context) {
+        val lParameterEntity = ctx.bodyAsClass<ParameterEntity>()
+        runInTransaction {
+            mParameterAPI.update(lParameterEntity)
         }
-        runBlocking {
-            while (lShouldRespond) {
-                delay(4_000)
-                sse.sendEvent("testEvent", mParameterAPI.findLatest() ?: ParameterEntity(processOperations = true).also { mParameterAPI.create(it) })
-            }
+        ParameterListeners.notify(lParameterEntity)
+        ctx.json(lParameterEntity)
+    }
+
+    fun listenToParameterChanges(sse: SseClient) {
+        val lParameterEntity = mParameterAPI.findLatest()
+            ?: ParameterEntity(processOperations = true).also { mParameterAPI.create(it) }
+        val lListener: (ParameterEntity) -> Unit = { aParameterEntity ->
+            sse.sendEvent(ParameterConstants.Sse.parameter, aParameterEntity)
+        }
+        ParameterListeners.register(lListener).also {
+            sse.onClose { ParameterListeners.unregister(it) }
+        }
+        sse.sendEvent(ParameterConstants.Sse.parameter, lParameterEntity)
+        while (true) {
+            1
         }
     }
 
