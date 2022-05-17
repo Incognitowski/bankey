@@ -1,12 +1,13 @@
 import configuration.DatabaseConfigurationDTO
-import framework.databaseDependencyModule
+import framework.DatabaseDependencyModule
+import operation.OperationDependencyModule
 import org.flywaydb.core.Flyway
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.TestInstance
 import org.junit.jupiter.api.extension.RegisterExtension
 import org.koin.test.KoinTest
 import org.koin.test.junit5.KoinTestExtension
-import parameter.parameterDependencyModule
+import parameter.ParameterDependencyModule
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 abstract class BaseTest : KoinTest {
@@ -18,8 +19,9 @@ abstract class BaseTest : KoinTest {
     @Suppress("unused")
     val koinTestExtension = KoinTestExtension.create {
         modules(
-            databaseDependencyModule(DatabaseProvider.getDatabaseConnection(mDatabaseConfigurationDTO)),
-            parameterDependencyModule(),
+            DatabaseDependencyModule(DatabaseProvider.getDatabaseConnection(mDatabaseConfigurationDTO)),
+            ParameterDependencyModule(),
+            OperationDependencyModule(),
         )
     }
 
