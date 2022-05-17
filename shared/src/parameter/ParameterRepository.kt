@@ -21,7 +21,7 @@ class ParameterRepository(private val mDatabase: Database) {
                 (ParameterTable.parameterId eq aParameterId)
             }
             .map { ParameterTable.createEntity(it) }
-            .lastOrNull()
+            .firstOrNull()
     }
 
     fun create(aParameterEntity: ParameterEntity) {
