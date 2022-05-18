@@ -3,6 +3,10 @@ plugins {
     kotlin("jvm")
 }
 
+dependencies {
+    implementation(project(":shared"))
+}
+
 kotlin.sourceSets["main"].kotlin.srcDirs("src")
 kotlin.sourceSets["test"].kotlin.srcDirs("test")
 
