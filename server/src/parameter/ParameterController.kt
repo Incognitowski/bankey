@@ -34,9 +34,6 @@ object ParameterController {
             sse.onClose { ParameterListeners.unregister(it) }
         }
         sse.sendEvent(ParameterConstants.Sse.parameter, lParameterEntity)
-        while (true) {
-            1
-        }
     }
 
 }
