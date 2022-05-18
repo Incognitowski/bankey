@@ -7,5 +7,9 @@
     "name": "",
     "user": "",
     "password": ""
+  },
+  "kafka": {
+    "bootstrapServers": "",
+    "jaasConfig": ""
   }
 }
