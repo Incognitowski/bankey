@@ -4,14 +4,26 @@ import framework.exception.BusinessRuleException
 import framework.exception.EntityNotFoundException
 import framework.extensionFunctions.isIn
 import framework.extensionFunctions.isNotIn
+import framework.injectFromKoin
+import parameter.ParameterAPI
 import java.time.Instant
 import java.util.*
 
 class OperationAPI(private val mOperationRepository: OperationRepository) {
 
+    private val mParameterAPI : ParameterAPI = injectFromKoin()
+
     private fun findById(aOperationId: Long): OperationEntity? = mOperationRepository.findById(aOperationId)
 
+    private fun validateIfShouldProcessOperations() {
+        val lParameterEntity = mParameterAPI.findLatest()
+            ?: throw BusinessRuleException("No parameter record found.")
+        if (!lParameterEntity.processOperations)
+            throw BusinessRuleException("Operations were temporarily disabled.")
+    }
+
     fun create(aOperationEntity: OperationEntity) {
+        validateIfShouldProcessOperations()
         aOperationEntity.protocol = UUID.randomUUID().toString()
         aOperationEntity.createdAt = Instant.now()
         aOperationEntity.updatedAt = null
@@ -21,6 +33,7 @@ class OperationAPI(private val mOperationRepository: OperationRepository) {
     }
 
     fun update(aOperationEntity: OperationEntity) {
+        validateIfShouldProcessOperations()
         aOperationEntity.updatedAt = Instant.now()
         OperationValidator.validate(aOperationEntity)
         validateUpdate(aOperationEntity)
@@ -51,6 +64,6 @@ class OperationAPI(private val mOperationRepository: OperationRepository) {
         return mOperationRepository.listByStatus(aStatus)
     }
 
-    fun listByAccount(aAccountIdentifier: String): List<OperationEntity> = mOperationRepository.listByStatus(aAccountIdentifier)
+    fun listByAccount(aAccountIdentifier: String): List<OperationEntity> = mOperationRepository.listByAccount(aAccountIdentifier)
 
 }
