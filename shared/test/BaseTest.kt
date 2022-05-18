@@ -30,7 +30,7 @@ abstract class BaseTest : KoinTest {
         Flyway.configure()
             .dataSource(DatabaseProvider.getDatabaseDataSource(mDatabaseConfigurationDTO))
             .locations("migrations/h2")
-            .load()
+            .load().also { it.clean() }
             .migrate()
     }
 
