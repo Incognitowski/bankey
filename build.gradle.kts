@@ -56,6 +56,9 @@ subprojects {
             // Koin
             implementation("io.insert-koin:koin-core:$koinVersion")
 
+            // Kafka
+            implementation("org.apache.kafka:kafka-clients:3.2.0")
+
             /////// TEST DEPENDENCIES ///////
             implementation("org.junit.jupiter:junit-jupiter:5.8.2")
 
