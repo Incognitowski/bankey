@@ -5,15 +5,19 @@ import framework.exception.EntityNotFoundException
 import framework.extensionFunctions.isIn
 import framework.extensionFunctions.isNotIn
 import framework.injectFromKoin
+import operationEvent.OperationEventAPI
+import operationEvent.OperationEventConstants
+import operationEvent.OperationEventEntity
 import parameter.ParameterAPI
 import java.time.Instant
 import java.util.*
 
 class OperationAPI(private val mOperationRepository: OperationRepository) {
 
-    private val mParameterAPI : ParameterAPI = injectFromKoin()
+    private val mParameterAPI: ParameterAPI = injectFromKoin()
+    private val mOperationEventAPI: OperationEventAPI = injectFromKoin()
 
-    private fun findById(aOperationId: Long): OperationEntity? = mOperationRepository.findById(aOperationId)
+    fun findById(aOperationId: Long): OperationEntity? = mOperationRepository.findById(aOperationId)
 
     private fun validateIfShouldProcessOperations() {
         val lParameterEntity = mParameterAPI.findLatest()
@@ -30,6 +34,12 @@ class OperationAPI(private val mOperationRepository: OperationRepository) {
         aOperationEntity.status = OperationConstants.Status.awaiting
         OperationValidator.validate(aOperationEntity)
         mOperationRepository.create(aOperationEntity)
+        mOperationEventAPI.create(
+            OperationEventEntity(
+                operationId = aOperationEntity.operationId,
+                type = OperationEventConstants.Types.created,
+            )
+        )
     }
 
     fun update(aOperationEntity: OperationEntity) {
