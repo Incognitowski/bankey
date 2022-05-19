@@ -1,6 +1,7 @@
 import configuration.DatabaseConfigurationDTO
 import framework.DatabaseDependencyModule
 import operation.OperationDependencyModule
+import operationEvent.OperationEventDependencyModule
 import org.flywaydb.core.Flyway
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.TestInstance
@@ -21,6 +22,7 @@ abstract class BaseTest : KoinTest {
         modules(
             DatabaseDependencyModule(DatabaseProvider.getDatabaseConnection(mDatabaseConfigurationDTO)),
             ParameterDependencyModule(),
+            OperationEventDependencyModule(),
             OperationDependencyModule(),
         )
     }
