@@ -12,6 +12,6 @@ class ParameterAPI(private val mParameterRepository: ParameterRepository) {
         mParameterRepository.update(aParameterEntity)
     }
 
-    fun findLatest(): ParameterEntity? = mParameterRepository.findLatest()
+    fun findLatest(): ParameterEntity = mParameterRepository.findLatest()
 
 }

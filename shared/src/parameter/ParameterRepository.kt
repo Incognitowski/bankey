@@ -5,12 +5,13 @@ import org.ktorm.dsl.*
 
 class ParameterRepository(private val mDatabase: Database) {
 
-    fun findLatest(): ParameterEntity? {
+    fun findLatest(): ParameterEntity {
         return mDatabase
             .from(ParameterTable)
             .select()
+            .orderBy(ParameterTable.parameterId.desc())
             .map { ParameterTable.createEntity(it) }
-            .lastOrNull()
+            .first()
     }
 
     fun findById(aParameterId: Long): ParameterEntity? {

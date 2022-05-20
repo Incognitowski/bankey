@@ -58,9 +58,11 @@ subprojects {
 
             // Kafka
             implementation("org.apache.kafka:kafka-clients:3.2.0")
+            implementation("org.apache.kafka:kafka-streams:3.2.0")
 
             // Serialization
             implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.13.3")
+            implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.13.3")
 
             /////// TEST DEPENDENCIES ///////
             implementation("org.junit.jupiter:junit-jupiter:5.8.2")
