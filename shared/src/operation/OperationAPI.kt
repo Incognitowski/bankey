@@ -11,6 +11,7 @@ import operationEvent.OperationEventEntity
 import parameter.ParameterAPI
 import java.time.Instant
 import java.util.*
+import kotlin.NoSuchElementException
 
 class OperationAPI(private val mOperationRepository: OperationRepository) {
 
@@ -20,8 +21,11 @@ class OperationAPI(private val mOperationRepository: OperationRepository) {
     fun findById(aOperationId: Long): OperationEntity? = mOperationRepository.findById(aOperationId)
 
     private fun validateIfShouldProcessOperations() {
-        val lParameterEntity = mParameterAPI.findLatest()
-            ?: throw BusinessRuleException("No parameter record found.")
+        val lParameterEntity = try {
+            mParameterAPI.findLatest()
+        } catch (e: NoSuchElementException) {
+            throw BusinessRuleException("No application parameters were found.")
+        }
         if (!lParameterEntity.processOperations)
             throw BusinessRuleException("Operations were temporarily disabled.")
     }
