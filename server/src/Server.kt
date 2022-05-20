@@ -13,24 +13,20 @@ import parameter.ParameterListeners
 
 class Server {
 
-    fun start() {
-        val lConfig = ConfigLoaderBuilder.default()
-            .addResourceSource("/applicationConfig.json")
-            .build()
-            .loadConfigOrThrow<ServerConfigurationDTO>()
+    fun getJavalinApp(aServerConfigurationDTO : ServerConfigurationDTO) : Javalin {
         val lDatabase: Database = DatabaseProvider.getDatabaseConnectionAndMigrate(
-            aDatabaseConfigurationDTO = lConfig.database
+            aDatabaseConfigurationDTO = aServerConfigurationDTO.database
         )
         DependencyContainer.bootstrap(
             aDatabase = lDatabase,
-            aKafkaConfigurationDTO = lConfig.kafka,
+            aKafkaConfigurationDTO = aServerConfigurationDTO.kafka,
         )
-        val lApp = Javalin.create {
+        val lJavalin = Javalin.create {
             it.defaultContentType = "application/json"
             it.enableCorsForAllOrigins()
         }.routes {
             path("parameter") {
-                get(ParameterController::getOrCreate)
+                get(ParameterController::getLatest)
                 put("{parameterId}", ParameterController::update)
                 sse("listen", ParameterController::listenToParameterChanges)
             }
@@ -42,9 +38,18 @@ class Server {
             it.serverStopping {
                 ParameterListeners.clearListeners()
             }
-        }.start(lConfig.port)
+        }
         createInitialParameter()
-        Runtime.getRuntime().addShutdownHook(Thread { lApp.stop() })
+        Runtime.getRuntime().addShutdownHook(Thread { lJavalin.stop() })
+        return lJavalin
+    }
+
+    fun start(): Javalin {
+        val lServerConfigurationDTO = ConfigLoaderBuilder.default()
+            .addResourceSource("/applicationConfig.json")
+            .build()
+            .loadConfigOrThrow<ServerConfigurationDTO>()
+        return getJavalinApp(lServerConfigurationDTO).start(lServerConfigurationDTO.port)
     }
 
     private fun createInitialParameter() {
