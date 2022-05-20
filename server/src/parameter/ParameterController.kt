@@ -9,10 +9,8 @@ object ParameterController {
 
     private val mParameterAPI: ParameterAPI = injectFromKoin()
 
-    fun getOrCreate(ctx: Context) {
-        val lParameterEntity = mParameterAPI.findLatest()
-            ?: ParameterEntity(processOperations = true).also { mParameterAPI.create(it) }
-        ctx.json(lParameterEntity)
+    fun getLatest(ctx: Context) {
+        ctx.json(mParameterAPI.findLatest())
     }
 
     fun update(ctx: Context) {
@@ -26,7 +24,6 @@ object ParameterController {
 
     fun listenToParameterChanges(sse: SseClient) {
         val lParameterEntity = mParameterAPI.findLatest()
-            ?: ParameterEntity(processOperations = true).also { mParameterAPI.create(it) }
         val lListener: (ParameterEntity) -> Unit = { aParameterEntity ->
             sse.sendEvent(ParameterConstants.Sse.parameter, aParameterEntity)
         }
